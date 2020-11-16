@@ -1,9 +1,12 @@
 package com.mike.movies;
 
+import static org.asynchttpclient.Dsl.asyncHttpClient;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.Executor;
 
+import org.asynchttpclient.AsyncHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.comparator.Comparators;
 
 import com.mike.movies.details.reelgood.ReelgoodMovieDetailsFetcher;
@@ -40,31 +44,23 @@ public class MoviesApplication {
 			
 			@Override
 			public void run(String... args) throws Exception {
-				try {
-	//				Comparator<Movie> movieComparator = Comparator.comparing(keyExtractor)
-					long before = System.nanoTime();
-					List<Movie> movies = watchlistParser.parseWatchlist();
-					long after = System.nanoTime();
-					LOGGER.info("Parse time: " + (after-before));
-					before = System.nanoTime();
-					movieDetailsFetcher.populateDetails(movies);
-					after = System.nanoTime();
-					LOGGER.info("Details time: " + (after-before));
-					movies.forEach(s -> System.out.println(s));
-				} catch(Throwable t) {
-					LOGGER.error("Exception thrown during execution.", t);
-				}
-				}
+					Comparator<Movie> movieComparator = Comparator.comparing((Movie m) -> m.isStreamableOn(Movie.Service.NETFLIX)).reversed()
+							                                      .thenComparing(m -> m.getDuration());
+					Queue<Movie> watchList = watchlistParser.parseWatchlist();
+					List<Movie> movies = movieDetailsFetcher.fetchMovieDetails(watchList);
+					movies.sort(movieComparator);
+					
+					for(Movie movie : movies) {
+						LOGGER.info(movie.toString());
+					}
+			}
 		};
 	}
 	
-	//TODO separate configuration class
+	//TODO separate configuration class and maybe inout and output queue/list should be beans
 	@Bean
-	public ThreadPoolTaskExecutor executor() {
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(32);
-		executor.setMaxPoolSize(32);
-		return executor;
+	public AsyncHttpClient httpClient() {
+		return asyncHttpClient();
 	}
 	
 }

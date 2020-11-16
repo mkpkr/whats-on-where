@@ -1,11 +1,11 @@
 package com.mike.movies.watchlist;
 
-import java.util.List;
+import java.util.Queue;
 
 import com.mike.movies.Movie;
 
 public interface WatchlistParser {
 	
-	List<Movie> parseWatchlist();
+	Queue<Movie> parseWatchlist();
 
 }

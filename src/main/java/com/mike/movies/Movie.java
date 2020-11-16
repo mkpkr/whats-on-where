@@ -1,17 +1,26 @@
 package com.mike.movies;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.Data;
 
 @Data
 public class Movie {
 	
+	public enum Service {
+		NETFLIX,
+		AMAZON,
+		HULU
+	}
+	
 	private final String id;
 	private final String name;
 	private final int year;
 	
-	private int runningTime;
-	private String director;
-	private boolean netflix;
+	private int duration;
+	private Map<Service, String> watchUrls;
+	private double rating;
 	
 	public Movie(String name, String year) {
 		this.id = parse(name, year);
@@ -25,6 +34,16 @@ public class Movie {
 			this.year = Integer.parseInt(year);
 		}
 		
+		watchUrls = new HashMap<>();
+		
+	}
+	
+	public void addWatchUrl(Service service, String url) {
+		watchUrls.put(service, url);
+	}
+	
+	public boolean isStreamableOn(Service service) {
+		return watchUrls.containsKey(service);
 	}
 	
 	private String parse(String name, String year) {

@@ -2,19 +2,15 @@ package com.mike.movies.watchlist;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 import com.mike.movies.Movie;
-import com.mike.movies.watchlist.WatchlistParser;
 
 public abstract class FileWatchlistParser implements WatchlistParser {
 	
@@ -23,8 +19,8 @@ public abstract class FileWatchlistParser implements WatchlistParser {
 	@Value("${watchlist.path}")
 	private String watchlistPath;
 	
-	public List<Movie> parseWatchlist() {
-		List<Movie> movies = new ArrayList<>();
+	public Queue<Movie> parseWatchlist() {
+		Queue<Movie> movies = new LinkedList<>();
 		try(Scanner scanner = new Scanner(new File(watchlistPath))) {
 			scanner.nextLine();
 			while(scanner.hasNextLine()) {
@@ -37,7 +33,7 @@ public abstract class FileWatchlistParser implements WatchlistParser {
 		} catch(Exception e) {
 			LOGGER.error("Exception while parsing watchlist file", e);
 		}
-		return List.of();
+		return new LinkedList<>();
 	}
 
 	protected abstract Movie getMovieNameAndYear(String line);
