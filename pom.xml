@@ -17,6 +17,8 @@
 
 	<properties>
 		<java.version>11</java.version>
+		<asynchttpclient.version>2.12.1</asynchttpclient.version>
+		<jsoup.version>1.13.1</jsoup.version>
 	</properties>
 
 	<dependencies>
@@ -43,23 +45,22 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- <dependency>
-			<groupId>org.apache.httpcomponents.client5</groupId>
-			<artifactId>httpclient5</artifactId>
-			<version>5.0.3</version>
-		</dependency> -->
-
 		<dependency>
 			<groupId>org.asynchttpclient</groupId>
 			<artifactId>async-http-client</artifactId>
-			<version>2.12.1</version>
+			<version>${asynchttpclient.version}</version>
 		</dependency>
-		
 
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.13.1</version>
+			<version>${jsoup.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.ulisesbocchio</groupId>
+			<artifactId>jasypt-spring-boot-starter</artifactId>
+			<version>2.0.0</version>
 		</dependency>
 
 	</dependencies>
