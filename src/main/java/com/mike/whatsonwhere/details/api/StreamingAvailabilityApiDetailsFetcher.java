@@ -18,7 +18,7 @@ import com.mike.whatsonwhere.model.Movie;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Makes API request to streaming-availability.p.rapidapi.com to fetch movie details.
+ * Makes request to streaming-availability API to fetch movie details.
  */
 @Component
 @Profile("api")
@@ -55,15 +55,17 @@ public class StreamingAvailabilityApiDetailsFetcher implements MovieDetailsFetch
 		String url = new StringBuilder(detailsUrl)
 				         .append("?")
 				         .toString();
+
+		httpClient.prepare("GET", url)
+				  .setHeader("x-rapidapi-key", apiKey)
+				  .setHeader("x-rapidapi-host", apiHost)
+				  .execute()
+				  .toCompletableFuture()
+				  .thenAccept(System.out::println)
+				  .join();
 		
-		try(AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-			client.prepare("GET", url)
-			.setHeader("x-rapidapi-key", apiKey)
-			.setHeader("x-rapidapi-host", apiHost)
-			.execute()
-			.toCompletableFuture()
-			.thenAccept(System.out::println)
-			.join();
+		try {
+			httpClient.close();
 		} catch(IOException e) {
 			log.error("Exception thrown closing AsyncHttpClient", e);
 		}
