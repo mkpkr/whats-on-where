@@ -19,6 +19,7 @@
 		<java.version>11</java.version>
 		<asynchttpclient.version>2.12.1</asynchttpclient.version>
 		<jsoup.version>1.13.1</jsoup.version>
+		<jasypt.version>3.0.3</jasypt.version>
 	</properties>
 
 	<dependencies>
@@ -60,7 +61,7 @@
 		<dependency>
 			<groupId>com.github.ulisesbocchio</groupId>
 			<artifactId>jasypt-spring-boot-starter</artifactId>
-			<version>2.0.0</version>
+			<version>${jasypt.version}</version>
 		</dependency>
 
 	</dependencies>
@@ -70,6 +71,12 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.ulisesbocchio</groupId>
+				<artifactId>jasypt-maven-plugin</artifactId>
+				<version>${jasypt.version}</version>
 			</plugin>
 		</plugins>
 	</build>
