@@ -9,9 +9,14 @@ import lombok.Data;
 public class Movie {
 	
 	public enum Service {
+		DISNEY,
+		HULU,
 		NETFLIX,
-		AMAZON,
-		HULU
+		PARAMOUNT,
+		PEACOCK,
+		PRIME,
+		SHOWTIME,
+		STARZ
 	}
 	
 	private final String id;

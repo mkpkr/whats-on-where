@@ -57,6 +57,11 @@ public class ReelgoodMovieDetailsFetcher extends AsyncHttpMovieDetailsFetcher {
 			case "Stream on Netflix" : movie.addWatchUrl(Service.NETFLIX, url); break;
 			case "Stream on Prime Video" : movie.addWatchUrl(Service.PRIME, url); break;
 			case "Stream on Hulu" : movie.addWatchUrl(Service.HULU, url); break;
+			case "Stream on Disney+" : movie.addWatchUrl(Service.DISNEY, url); break;
+			case "Stream on Paramount+" : movie.addWatchUrl(Service.PARAMOUNT, url); break;
+			case "Stream on Starz" : movie.addWatchUrl(Service.STARZ, url); break;
+			case "Stream on Showtime" : movie.addWatchUrl(Service.SHOWTIME, url); break;
+			case "Stream on Peacock" : movie.addWatchUrl(Service.PEACOCK, url); break;
 			default: //unknown service
 			}
 		}
