@@ -1,23 +1,19 @@
 package com.mike.whatsonwhere;
 
 import static org.asynchttpclient.Dsl.asyncHttpClient;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.Executor;
 
 import org.asynchttpclient.AsyncHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.util.comparator.Comparators;
 
 import com.mike.whatsonwhere.details.reelgood.ReelgoodMovieDetailsFetcher;
 import com.mike.whatsonwhere.model.Movie;
