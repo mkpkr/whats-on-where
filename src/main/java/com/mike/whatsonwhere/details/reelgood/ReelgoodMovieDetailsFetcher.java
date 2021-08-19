@@ -13,25 +13,32 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.mike.whatsonwhere.details.MovieDetailsFetcher;
+import com.mike.whatsonwhere.details.api.StreamingAvailabilityApiDetailsFetcher;
 import com.mike.whatsonwhere.model.Movie;
 import com.mike.whatsonwhere.model.Movie.Service;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Makes HTTP GET requests to reelgood.com and scrapes the HTML to see which services the movie streams on.
+ * 
+ * This is a crude & slow initial design before I found an available (free) API.
+ * 
+ * Recommended to use {@link StreamingAvailabilityApiDetailsFetcher} instead (default).
+ *
+ */
 @Component
 @Profile("reelgood")
+@Slf4j
 public class ReelgoodMovieDetailsFetcher implements MovieDetailsFetcher {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReelgoodMovieDetailsFetcher.class);
-
 	private final String detailsUrl;
 	private CountDownLatch remaining;
 	private int maxConcurrentRequests;
@@ -42,8 +49,8 @@ public class ReelgoodMovieDetailsFetcher implements MovieDetailsFetcher {
 	private List<Movie> output;
 	
 	@Autowired
-	public ReelgoodMovieDetailsFetcher(@Value("${movies.details.url}") String detailsUrl,
-							   		   @Value("${movies.details.max_concurrent_requests}") int maxConcurrentRequests,
+	public ReelgoodMovieDetailsFetcher(@Value("${whatsonwhere.details.url}") String detailsUrl,
+							   		   @Value("${whatsonwhere.details.max_concurrent_requests}") int maxConcurrentRequests,
 							           AsyncHttpClient httpClient) {
 		this.detailsUrl = detailsUrl;
 		this.maxConcurrentRequests = maxConcurrentRequests;
@@ -70,7 +77,7 @@ public class ReelgoodMovieDetailsFetcher implements MovieDetailsFetcher {
 			try {
 				httpClient.close();
 			} catch(IOException e) {
-				LOGGER.error("Couldn't close httpClient.", e);
+				log.error("Couldn't close httpClient.", e);
 			} 
 		}
 		
@@ -145,14 +152,14 @@ public class ReelgoodMovieDetailsFetcher implements MovieDetailsFetcher {
 	                                    .getElementsByTag("span").get(0)
 	                                    .text();
 			} catch(Exception e) {
-				LOGGER.error("Could not find imdb rating for movie={}", movie.getId());
+				log.error("Could not find imdb rating for movie={}", movie.getId());
 			}
 			
 			if(imdbRating != null) {
 				try {
 					movie.setRating(Double.parseDouble(imdbRating));
 				} catch(NumberFormatException|NullPointerException e) {
-					LOGGER.error("Could not parse imdb rating for movie={}, rating={}", movie.getId(), imdbRating);
+					log.error("Could not parse imdb rating for movie={}, rating={}", movie.getId(), imdbRating);
 				}
 			}
 		}
@@ -164,7 +171,7 @@ public class ReelgoodMovieDetailsFetcher implements MovieDetailsFetcher {
 						             .parent()
 						             .text();
 			} catch(Exception e) {
-				LOGGER.error("Could not find duration for movie={}", movie.getId());
+				log.error("Could not find duration for movie={}", movie.getId());
 			}
 			
 			if(durationString != null) {
@@ -175,19 +182,19 @@ public class ReelgoodMovieDetailsFetcher implements MovieDetailsFetcher {
 					int duration = hours*60 + minutes;
 					movie.setDuration(duration);
 				} catch(NumberFormatException|ArrayIndexOutOfBoundsException e) {
-					LOGGER.error("Could not parse duration for movie={}, duration={}", movie.getId(), durationString);
+					log.error("Could not parse duration for movie={}, duration={}", movie.getId(), durationString);
 				}
 			}			
 		}
 		
 		private void fail(int httpStatusCode) {
-			LOGGER.error("Failed to find movie={}, status={}", movie.getId(), httpStatusCode);
+			log.error("Failed to find movie={}, status={}", movie.getId(), httpStatusCode);
 			
 		}
 
 		@Override
 		public void onThrowable(Throwable t) {
-		    LOGGER.error("Error getting details for {}, retrying ({})", movie.getId(), t.getMessage());
+		    log.error("Error getting details for {}, retrying ({})", movie.getId(), t.getMessage());
 		    fetchDetails(movie);
 		 }
 
