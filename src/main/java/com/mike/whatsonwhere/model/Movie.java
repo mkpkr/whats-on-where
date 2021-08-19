@@ -1,4 +1,4 @@
-package com.mike.movies;
+package com.mike.whatsonwhere.model;
 
 import java.util.HashMap;
 import java.util.Map;

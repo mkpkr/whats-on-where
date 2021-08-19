@@ -1,8 +1,8 @@
-package com.mike.movies.watchlist;
+package com.mike.whatsonwhere.watchlist;
 
 import java.util.Queue;
 
-import com.mike.movies.Movie;
+import com.mike.whatsonwhere.model.Movie;
 
 public interface WatchlistParser {
 	

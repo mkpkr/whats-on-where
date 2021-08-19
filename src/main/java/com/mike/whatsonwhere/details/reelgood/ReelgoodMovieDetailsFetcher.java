@@ -1,4 +1,4 @@
-package com.mike.movies.details.reelgood;
+package com.mike.whatsonwhere.details.reelgood;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,9 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import com.mike.movies.Movie;
-import com.mike.movies.Movie.Service;
-import com.mike.movies.details.MovieDetailsFetcher;
+import com.mike.whatsonwhere.details.MovieDetailsFetcher;
+import com.mike.whatsonwhere.model.Movie;
+import com.mike.whatsonwhere.model.Movie.Service;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 

@@ -1,4 +1,4 @@
-package com.mike.movies;
+package com.mike.whatsonwhere;
 
 import static org.asynchttpclient.Dsl.asyncHttpClient;
 import java.util.Comparator;
@@ -19,8 +19,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.comparator.Comparators;
 
-import com.mike.movies.details.reelgood.ReelgoodMovieDetailsFetcher;
-import com.mike.movies.watchlist.WatchlistParser;
+import com.mike.whatsonwhere.details.reelgood.ReelgoodMovieDetailsFetcher;
+import com.mike.whatsonwhere.model.Movie;
+import com.mike.whatsonwhere.watchlist.WatchlistParser;
 
 @SpringBootApplication
 public class MoviesApplication {

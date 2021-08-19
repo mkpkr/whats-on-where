@@ -1,9 +1,9 @@
-package com.mike.movies.details;
+package com.mike.whatsonwhere.details;
 
 import java.util.List;
 import java.util.Queue;
 
-import com.mike.movies.Movie;
+import com.mike.whatsonwhere.model.Movie;
 
 public interface MovieDetailsFetcher {
 	

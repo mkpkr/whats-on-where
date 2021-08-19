@@ -10,10 +10,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.mike</groupId>
-	<artifactId>movies</artifactId>
+	<artifactId>whatsonwhere</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>movies</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Which movies on your watchlist are streaming which services?</description>
 
 	<properties>
 		<java.version>11</java.version>

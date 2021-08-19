@@ -1,12 +1,12 @@
-package com.mike.movies.watchlist.letterboxd;
+package com.mike.whatsonwhere.watchlist.letterboxd;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import com.mike.movies.Movie;
-import com.mike.movies.watchlist.FileWatchlistParser;
+import com.mike.whatsonwhere.model.Movie;
+import com.mike.whatsonwhere.watchlist.FileWatchlistParser;
 
 @Component
 @Profile("letterboxd")

@@ -1,4 +1,4 @@
-package com.mike.movies.watchlist;
+package com.mike.whatsonwhere.watchlist;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.mike.movies.Movie;
+import com.mike.whatsonwhere.model.Movie;
 
 public abstract class FileWatchlistParser implements WatchlistParser {
 	
