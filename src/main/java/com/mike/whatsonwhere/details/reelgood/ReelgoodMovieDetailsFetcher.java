@@ -1,5 +1,7 @@
 package com.mike.whatsonwhere.details.reelgood;
 
+import java.util.List;
+
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Response;
 import org.jsoup.Jsoup;
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.mike.whatsonwhere.details.AsyncHttpMovieDetailsFetcher;
+import com.mike.whatsonwhere.details.MovieDetailsRequest;
 import com.mike.whatsonwhere.model.Movie;
 import com.mike.whatsonwhere.model.Movie.Service;
 
@@ -30,11 +33,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReelgoodMovieDetailsFetcher extends AsyncHttpMovieDetailsFetcher {
 	
+	private String detailsUrl;
+	
 	@Autowired
 	public ReelgoodMovieDetailsFetcher(@Value("${whatsonwhere.details.url}") String detailsUrl,
 							   		   @Value("${whatsonwhere.details.max_concurrent_requests}") int maxConcurrentRequests,
 							           AsyncHttpClient httpClient) {
-		super(detailsUrl, maxConcurrentRequests, httpClient);
+		super(maxConcurrentRequests, httpClient);
+		this.detailsUrl = detailsUrl;
+	}
+
+	@Override
+	protected List<MovieDetailsRequest> buildMovieDetailsRequests(Movie movie) {
+		return List.of(MovieDetailsRequest.builder()
+				                          .baseUrl(detailsUrl + movie.getId())
+				                          .build());
 	}
 	
 	@Override
@@ -110,6 +123,7 @@ public class ReelgoodMovieDetailsFetcher extends AsyncHttpMovieDetailsFetcher {
 			}
 		}			
 	}
+
 
 
 

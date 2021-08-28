@@ -2,15 +2,18 @@ package com.mike.whatsonwhere.details;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.BoundRequestBuilder;
 import org.asynchttpclient.Response;
 
 import com.mike.whatsonwhere.model.Movie;
+import com.mike.whatsonwhere.model.Movie.Service;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AsyncHttpMovieDetailsFetcher implements MovieDetailsFetcher {
 	
-	private String detailsUrl;
 	private CountDownLatch remaining;
 	private int maxConcurrentRequests;
 	
@@ -27,13 +29,17 @@ public abstract class AsyncHttpMovieDetailsFetcher implements MovieDetailsFetche
 	private Queue<Movie> input;
 	private List<Movie> output;
 	
-	public AsyncHttpMovieDetailsFetcher(String detailsUrl,
-							   		   int maxConcurrentRequests,
+	public AsyncHttpMovieDetailsFetcher(int maxConcurrentRequests,
 							           AsyncHttpClient httpClient) {
-		this.detailsUrl = detailsUrl;
 		this.maxConcurrentRequests = maxConcurrentRequests;
 		this.httpClient = httpClient;
 	}
+	
+	protected abstract List<MovieDetailsRequest> buildMovieDetailsRequests(Movie movie);
+	
+//	protected abstract MovieDetailsRequest buildMovieDetailsRequest(Movie movie, Service service);
+	
+	protected abstract void handleSuccessResponse(Response response, Movie movie);
 
 	@Override
 	public List<Movie> fetchMovieDetails(Queue<Movie> input) {
@@ -42,7 +48,9 @@ public abstract class AsyncHttpMovieDetailsFetcher implements MovieDetailsFetche
 		remaining = new CountDownLatch(input.size());
 
 		for(int i = 0; i < maxConcurrentRequests; i++) {
-			fetchNext();
+			if(!input.isEmpty()) {
+				fetchDetails(input.poll());
+			}
 		}
 
 		try{
@@ -60,35 +68,43 @@ public abstract class AsyncHttpMovieDetailsFetcher implements MovieDetailsFetche
 		
 		return output;
 	}
-	
-	private void fetchNext() {
-		if(!input.isEmpty()) {
-			fetchDetails(input.poll(), true);
+
+	private void fetchDetails(Movie movie) {
+		List<MovieDetailsRequest> requests = buildMovieDetailsRequests(movie);
+		
+		for(MovieDetailsRequest request : requests) {
+			BoundRequestBuilder builder = httpClient.prepareGet(request.getCompleteUrl());
+			request.getHeaders().entrySet().stream()
+			       .forEach(header -> builder.setHeader(header.getKey(), header.getValue()));
+			builder.execute(new CompletionHandler(movie));
 		}
+		
 	}
 	
-	private void fetchDetails(Movie movie, boolean retryOnFail) {
-		httpClient.prepareGet(detailsUrl + movie.getId())
-		          .execute(new CompletionHandler(movie, retryOnFail));
-	}
-	
-	protected abstract void handleSuccessResponse(Response response, Movie movie);
+//	private void fetchDetails(Movie movie, EnumSet<Service> services) {
+//		for(Service service : services) {
+//			MovieDetailsRequest request = buildMovieDetailsRequest(movie, service);
+//
+//			BoundRequestBuilder builder = httpClient.prepareGet(request.getCompleteUrl());
+//				request.getHeaders().entrySet().stream()
+//				       .forEach(header -> builder.setHeader(header.getKey(), header.getValue()));
+//				builder.execute(new CompletionHandler(movie, EnumSet.of(service), false));
+//		}
+//	}
 	
 	/*
 	 * Handle async HTTP response to fill movie details 
 	 */
-	private class CompletionHandler extends AsyncCompletionHandler<Movie> {
+	private class CompletionHandler extends AsyncCompletionHandler<Void> {
 		
 		private Movie movie;
-		private boolean retryOnFail;
 		
-		public CompletionHandler(Movie movie, boolean retryOnFail) {
+		public CompletionHandler(Movie movie) {
 			this.movie = movie;
-			this.retryOnFail = retryOnFail;
 		}
 		
 		@Override
-		public Movie onCompleted(Response response) {
+		public Void onCompleted(Response response) {
 			int httpStatusCode = response.getStatusCode();
 
 			if(httpStatusCode == HttpResponseStatus.OK.code()) {
@@ -98,9 +114,11 @@ public abstract class AsyncHttpMovieDetailsFetcher implements MovieDetailsFetche
 			}
 			
 			remaining.countDown();
-			fetchNext();
+			if(!input.isEmpty()) {
+				fetchDetails(input.poll());
+			}
 			output.add(movie);
-			return movie;
+			return null;
 		}
 		
 		private void handleFailResponse(int httpStatusCode) {
@@ -110,16 +128,10 @@ public abstract class AsyncHttpMovieDetailsFetcher implements MovieDetailsFetche
 
 		@Override
 		public void onThrowable(Throwable t) {
-			if(retryOnFail) {
-			    log.error("Error getting details for {}, retrying ({})", movie.getId(), t.getMessage());
-			    fetchDetails(movie, false);
-			} else {
-				log.error("Error getting details for {}, will not retry ({})", movie.getId(), t.getMessage());
-			}
-		 }
-
-
+			log.error("Error getting details for {} ({})", movie.getId(), t.getMessage());
+		}
 	}
+	
 	
 
 }
