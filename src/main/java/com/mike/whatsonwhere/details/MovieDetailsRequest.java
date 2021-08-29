@@ -19,7 +19,6 @@ public class MovieDetailsRequest {
 	@Singular private Map<String, String> queryParams;
 	@Singular private Map<String, List<String>> headers;
 	
-	
 	public String getCompleteUrl() {
 		StringBuilder sb = new StringBuilder(baseUrl);
 		sb.append("?");

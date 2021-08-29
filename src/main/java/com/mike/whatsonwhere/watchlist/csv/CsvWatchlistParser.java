@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import com.mike.whatsonwhere.model.Movie;
 import com.mike.whatsonwhere.watchlist.WatchlistParser;
@@ -18,7 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Profile("csv")
-public abstract class CsvWatchlistParser implements WatchlistParser {
+@Component
+public class CsvWatchlistParser implements WatchlistParser {
 
 	@Value("${whatsonwhere.watchlist.path}")
 	private String watchlistPath;
