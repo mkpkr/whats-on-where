@@ -27,17 +27,10 @@ public class Movie {
 	private Map<Service, String> watchUrls;
 	private double rating;
 	
-	public Movie(String name, String year) {
-		this.id = parse(name, year);
+	public Movie(String name, int year) {
+		this.id = createId(name, year);
 		this.name = name;
-		if(year.trim().isEmpty()) {
-			this.year = -1;
-		} else {
-			
-			//TODO probably should accept int year and do parsing elsewhere 
-			
-			this.year = Integer.parseInt(year);
-		}
+		this.year = year;
 		
 		watchUrls = new HashMap<>();
 		
@@ -51,7 +44,7 @@ public class Movie {
 		return watchUrls.containsKey(service);
 	}
 	
-	private String parse(String name, String year) {
+	private String createId(String name, int year) {
 		
 		//TODO should this parsing be here? 
 		

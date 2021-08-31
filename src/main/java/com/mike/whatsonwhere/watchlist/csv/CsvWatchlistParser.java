@@ -37,7 +37,10 @@ public class CsvWatchlistParser implements WatchlistParser {
 			scanner.nextLine();
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				movies.add(getMovieNameAndYear(line));
+				Movie movie = getMovie(line);
+				if(movie != null) {
+					movies.add(movie);
+				}
 			}
 			return movies;
 		} catch(FileNotFoundException e) {
@@ -48,9 +51,16 @@ public class CsvWatchlistParser implements WatchlistParser {
 		return new LinkedList<>();
 	}
 
-	private Movie getMovieNameAndYear(String line) {
+	private Movie getMovie(String line) {
 		String[] details = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-		return new Movie(details[moviePosition], details[yearPosition]);
+		int year;
+		try{
+			year = Integer.parseInt(details[yearPosition]);
+		} catch(NumberFormatException e) {
+			log.error("Error parsing {}; year {} is not a valid number", line, details[yearPosition]);
+			return null;
+		}
+		return new Movie(details[moviePosition], year);
 	}
 
 }
